@@ -17,5 +17,8 @@
     "jquery-csv": "^1.0.21",
     "node-fetch": "^2.6.5",
     "wokcommands": "^1.5.3"
+  }, 
+  "engines": {
+    "node": "14.18.1"
   }
 }
