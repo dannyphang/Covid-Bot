@@ -17,14 +17,20 @@ module.exports = {
     
     // Invoked when the command is actually ran
     callback: async ({ channel, args }) => {
-        const data = await getGithub('https://raw.githubusercontent.com/MoH-Malaysia/covid19-public/main/vaccination/aefi.csv');
+        const data = await getGithub('https://raw.githubusercontent.com/CITF-Malaysia/citf-public/main/vaccination/vax_malaysia.csv');
         const dataS = await getGithub('https://raw.githubusercontent.com/CITF-Malaysia/citf-public/main/vaccination/vax_state.csv');
         
         if(args.length == 0){
-            let total = -1;
-            for (let i = 0; i < dataS.length; i++){
-                total += parseInt(dataS[i].daily);
+            let total = -0;
+            let pfi, az, sin = 0;
+            
+            for (let i = 0; i < data.length; i++){
+                total += parseInt(data[i].daily);
             }
+            
+            pfi = parseInt(data[data.length - 1].pfizer1) + parseInt(data[data.length - 1].pfizer2);
+            az = parseInt(data[data.length - 1].astra1) + parseInt(data[data.length - 1].astra2);
+            sin = parseInt(data[data.length - 1].sinovac1) + parseInt(data[data.length - 1].sinovac2);
             
             const embed = new MessageEmbed()
             .setTitle('Malaysia Covid-19 Vaccination')
@@ -42,17 +48,17 @@ module.exports = {
                 },
                 {
                     name: '`Pfizer`', 
-                    value: data[data.length - 2].daily_total, 
+                    value: pfi.toString(), 
                     inline: true, 
                 },
                 { 
                     name: '`Sinovac`', 
-                    value: data[data.length - 1].daily_total, 
+                    value: sin.toString(), 
                     inline: true, 
                 },
                 { 
                     name: '`Astrazeneca`', 
-                    value: data[data.length - 3].daily_total, 
+                    value: az.toString(), 
                     inline: true, 
                 }, 
             ])
@@ -64,34 +70,41 @@ module.exports = {
             var isDate = false;
             var index2 = [];
             var stateNo = stateFunc(args);
+            var typeNo = vType(args);
+            let vtype, vtype2;
             
-            data.find(function(item, i){
+            dataS.find(function(item, i){
                 if(item.date == args.toString()){
                     isDate = true;
                     index2.push(i);
                 }
             });
             
-            console.log(index2);
-            var typeNo = vType(args);
-            
-            var vtype = args.toString();
-            if(vtype == 'az'){
-                vtype = 'astrazeneca';
+            if(args.toString() == 'az'){
+                vtype = 'astra1';
+                vtype2 = 'astra2';
+            }
+            else if(args.toString() == 'pfizer'){
+                vtype = 'pfizer1';
+                vtype2 = 'pfizer2';
+            }
+            else if(args.toString() == 'sinovac'){
+                vtype = 'sinovac1';
+                vtype2 = 'sinovac2';
             }
             
             if(typeNo != -1 && !isDate && stateNo == -1){ // type: true
-                
-                var total = 0;
+                let daily = 0;
+                let total = 0;
                 
                 for (let i = 0; i < data.length; i++){
-                    if(data[i].vaxtype == vtype){
-                        total += parseInt(data[i].daily_total);
-                    }
+                    total += parseInt(data[i][vtype]) + parseInt(data[i][vtype2]);
                 }
                 
+                daily = parseInt(data[data.length - 1][vtype]) + parseInt(data[data.length - 1][vtype2]);
+                
                 const embed = new MessageEmbed()
-                .setTitle(`Covid-19 Vaccination type: ${vtype.toUpperCase()}`)
+                .setTitle(`Covid-19 Vaccination type: ${args.toString().toUpperCase()}`)
                 .setColor('#20b2aa')
                 .addFields([ 
                     {
@@ -106,7 +119,7 @@ module.exports = {
                     },
                     { 
                         name: '`Daily Vaccinated`', 
-                        value: data[data.length - typeNo].daily_total,
+                        value: daily.toString(),
                         inline: true,
                     }, 
                 ])
@@ -115,6 +128,11 @@ module.exports = {
                 return embed
             }
             else if(typeNo == -1 && isDate && stateNo == -1){ // date: true
+                
+                pfi = parseInt(data[index2].pfizer1) + parseInt(data[index2].pfizer2);
+                az = parseInt(data[index2].astra1) + parseInt(data[index2].astra2);
+                sin = parseInt(data[index2].sinovac1) + parseInt(data[index2].sinovac2);
+                
                 const embed = new MessageEmbed()
                 .setTitle(`Malaysia Covid-19 Vaccination on ${args.toString()}`)
                 .setColor('#20b2aa')
