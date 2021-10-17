@@ -22,8 +22,8 @@ module.exports = {
         
         if(args.length == 0){
             let total = -1;
-            for (let i = 0; i < data.length; i++){
-                total += parseInt(data[i].daily_total);
+            for (let i = 0; i < dataS.length; i++){
+                total += parseInt(dataS[i].daily);
             }
             
             const embed = new MessageEmbed()
