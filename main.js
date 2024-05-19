@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const WOKCommands = require('wokcommands');
 const { prefix } = require('./util.js');
 const path = require('path');
+const keepAlive = require('./server.js');
 
 // import DiscordJS, { Intents } from 'discord.js'
 // import dotenv from 'dotenv'
@@ -21,9 +22,12 @@ const client = new DiscordJS.Client({
     ]
 })
 
+keepAlive();
+
 client.on('ready', (msg) => {
-    console.log('The bot is online')
-    client.user.setPresence({ activities: [{ name: '>help' }], status: 'idle' });
+    console.log('The bot is online');
+    
+    client.user.setPresence({ activities: [{ name: '>help' }], status: 'online' });
     
     const __dirname = path.resolve();
     
