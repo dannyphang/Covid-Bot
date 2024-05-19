@@ -17,24 +17,28 @@ dotenv.config()
 const client = new DiscordJS.Client({
     intents: [
         Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES, 
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS, 
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     ]
 })
 
 keepAlive();
 
-client.on('ready', (msg) => {
-    console.log('The bot is online');
-    
-    client.user.setPresence({ activities: [{ name: '>help' }], status: 'online' });
-    
-    const __dirname = path.resolve();
-    
-    new WOKCommands(client, { 
-        commandsDir: path.join(__dirname, 'commands')
-    })
-    .setDefaultPrefix(prefix())
+// client.on('ready', (msg) => {
+//     console.log('The bot is online');
+
+//     client.user.setPresence({ activities: [{ name: '>help' }], status: 'online' });
+
+//     const __dirname = path.resolve();
+
+//     new WOKCommands(client, {
+//         commandsDir: path.join(__dirname, 'commands')
+//     })
+//         .setDefaultPrefix(prefix())
+// })
+
+client.on('message', msg => {
+    msg.channel.send(msg.content)
 })
 
 client.login(process.env.TOKEN)
